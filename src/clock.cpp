@@ -26,6 +26,8 @@ using namespace std;
 
 
 
+
+
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
 
@@ -100,28 +102,10 @@ int main(int argc, char **argv) {
 	//Load mice
 	SDL_Surface* miceImage = IMG_Load("romfs:/mymice-500x500.jpg");
 	SDL_Texture* miceTexture = SDL_CreateTextureFromSurface(renderer, miceImage);
-	//renderTexture(miceTexture, renderer, 300, 300, SCREEN_WIDTH, SCREEN_HEIGHT); //render the splash screen
-	//SDL_RenderPresent(renderer); //show renderer on screen
-	
 
 	
 	while(appletMainLoop() && !quit) { //main game loop
 		
-		/*
-		
-		++frames; //increase frames counter
-		int currTime = SDL_GetTicks(); //current time since last tick
-		float elapsed = (currTime - prevTime); //elapsed time
-		if (elapsed > 1) { //if elapsed time id greater than 100
-			//fps = round(frames / (elapsed / 1000.0)); //round fps
-			frames = 0; //reset frames
-			prevTime = currTime; //set previous time to current time
-			
-		//Clock
-		SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
-			
-		}
-		*/
 		
 		//Scan all the inputs. This should be done once for each frame
 		hidScanInput();
@@ -132,7 +116,8 @@ int main(int argc, char **argv) {
 		//Clock
 		char finaltime[100] = "time...";
 		time_t unixTime = time(NULL);
-		struct tm* timeStruct = gmtime((const time_t *)&unixTime);//Gets UTC time. Currently localtime() will also return UTC (timezones not supported).
+		//struct tm* timeStruct = gmtime((const time_t *)&unixTime);
+		struct tm* timeStruct = localtime((const time_t *)&unixTime);
 
 		int hours = timeStruct->tm_hour;
 		int minutes = timeStruct->tm_min;
@@ -141,9 +126,14 @@ int main(int argc, char **argv) {
 		int month = timeStruct->tm_mon;
 		int year = timeStruct->tm_year +1900;
 		int wday = timeStruct->tm_wday;
-		snprintf(finaltime, 100, "%i:%i:%i", hours, minutes, seconds);
 		
-	
+		
+		//we need to convert timezones...  
+		
+		
+		
+		
+		snprintf(finaltime, 100, "%i:%i:%i", hours, minutes, seconds);	
 		SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, finaltime, Aqua); 
 		SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage); //now you can convert it into a texture
 		SDL_Rect Message_rect; //create a rect
@@ -151,9 +141,6 @@ int main(int argc, char **argv) {
 		Message_rect.y = 10; // controls the rect's y coordinte
 		Message_rect.w = 300; // controls the width of the rect
 		Message_rect.h = 100; // controls the height of the rect
-		//SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
-		
-		
 		SDL_FreeSurface(surfaceMessage);
 		SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
 		SDL_DestroyTexture(Message);
@@ -162,10 +149,11 @@ int main(int argc, char **argv) {
 		
 		//mice image
 		renderTexture(miceTexture, renderer, 300, 300, SCREEN_WIDTH, SCREEN_HEIGHT); //render the splash screen
-		SDL_RenderPresent(renderer); //show renderer on screen
-	
-	
-
+		
+		
+		
+		//load everything
+		SDL_RenderPresent(renderer); 
 		
 		u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
 		
