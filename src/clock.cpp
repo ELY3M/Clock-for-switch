@@ -114,6 +114,7 @@ int main(int argc, char **argv) {
 		SDL_RenderClear(renderer);
 		
 		//Clock
+		const char* ampm = "AM";
 		char finaltime[100] = "time...";
 		time_t unixTime = time(NULL);
 		//struct tm* timeStruct = gmtime((const time_t *)&unixTime);
@@ -128,19 +129,26 @@ int main(int argc, char **argv) {
 		int wday = timeStruct->tm_wday;
 		
 		
-		//we need to convert timezones...  
+		if (hours <= 12 && hours >= 0) {
+		//AM	
+		ampm = "AM";
+		}
+        else if (hours >= 13 && hours <= 24)
+        {
+		hours = (hours - 12);
+		//PM
+		ampm = "PM";
+        }
 		
 		
-		
-		
-		snprintf(finaltime, 100, "%i:%i:%i", hours, minutes, seconds);	
+		snprintf(finaltime, 100, "%i:%02d:%02d %s", hours, minutes, seconds, ampm);	
 		SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, finaltime, Aqua); 
 		SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage); //now you can convert it into a texture
 		SDL_Rect Message_rect; //create a rect
 		Message_rect.x = SCREEN_WIDTH / 2;  //controls the rect's x coordinate 
 		Message_rect.y = 10; // controls the rect's y coordinte
-		Message_rect.w = 300; // controls the width of the rect
-		Message_rect.h = 100; // controls the height of the rect
+		Message_rect.w = 630; // controls the width of the rect
+		Message_rect.h = 300; // controls the height of the rect
 		SDL_FreeSurface(surfaceMessage);
 		SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
 		SDL_DestroyTexture(Message);
