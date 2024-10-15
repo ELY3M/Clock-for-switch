@@ -77,7 +77,10 @@ int main(int argc, char **argv) {
 	IMG_Init(IMG_INIT_JPG); //init image lib
 	
 
-
+	//controller
+    padConfigureInput(1, HidNpadStyleSet_NpadStandard);
+    PadState pad;
+    padInitializeDefault(&pad);
 	
 	int prevTime = SDL_GetTicks(); // Get ticks
 	bool quit = false; // quit variable. if true quits and exits application
@@ -107,8 +110,9 @@ int main(int argc, char **argv) {
 	while(appletMainLoop() && !quit) { //main game loop
 		
 		
-		//Scan all the inputs. This should be done once for each frame
-		hidScanInput();
+		//scan inputs
+        padUpdate(&pad);
+        u64 kDown = padGetButtonsDown(&pad);
 		
 		//clear screen every update//
 		SDL_RenderClear(renderer);
@@ -163,13 +167,10 @@ int main(int argc, char **argv) {
 		//load everything
 		SDL_RenderPresent(renderer); 
 		
-		u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
-		
-		
 		
 		//quit by press plus button
-		if (kDown & KEY_PLUS) {
-		quit = true; 
+		if (kDown & HidNpadButton_Plus) {
+		quit = true;		
 		break; 
 		}
 
